@@ -1,0 +1,40 @@
+=== Content Publish Orchestration Demo (LangGraph4j) ===
+
+[1] A 正常内容
+    trace   : intake -> analyze -> score -> publish
+    status  : PUBLISHED (expected PUBLISHED)
+    decision: AUTO_PUBLISH, riskScore: 0, retryCount: 0
+    detail  : contentId=c-1001, status=PUBLISHED, decision=AUTO_PUBLISH, riskScore=0, retryCount=0, violations=[]
+    url     : https://publish.local/content/c-1001
+    result  : PASS
+
+[2] B 轻度风险（软违规 x2）
+    trace   : intake -> analyze -> score -> manual_review
+    status  : PENDING_MANUAL (expected PENDING_MANUAL)
+    decision: MANUAL_REVIEW, riskScore: 60, retryCount: 0
+    detail  : contentId=c-1002, status=PENDING_MANUAL, decision=MANUAL_REVIEW, riskScore=60, retryCount=0, violations=[SOFT:赌博, SOFT:暴力]
+    result  : PASS
+
+[3] C 中度风险（软违规 x3）
+    trace   : intake -> analyze -> score -> revise -> analyze -> score -> publish
+    status  : PUBLISHED (expected PUBLISHED)
+    decision: AUTO_PUBLISH, riskScore: 0, retryCount: 1
+    detail  : contentId=c-1003, status=PUBLISHED, decision=AUTO_PUBLISH, riskScore=0, retryCount=1, violations=[]
+    url     : https://publish.local/content/c-1003
+    result  : PASS
+
+[4] D 重度风险（硬违规 x2）
+    trace   : intake -> analyze -> score -> revise -> analyze -> score -> revise -> analyze -> score -> escalate
+    status  : ESCALATED (expected ESCALATED)
+    decision: ESCALATE_HUMAN, riskScore: 100, retryCount: 2
+    detail  : contentId=c-1004, status=ESCALATED, decision=ESCALATE_HUMAN, riskScore=100, retryCount=2, violations=[HARD:诈骗, HARD:违禁]
+    result  : PASS
+
+[5] E 非法入参（空 draft）
+    trace   : intake -> reject
+    status  : REJECTED (expected REJECTED)
+    decision: REJECT_INVALID_INPUT, riskScore: 0, retryCount: 0
+    detail  : contentId=c-1005, status=REJECTED, decision=REJECT_INVALID_INPUT, riskScore=0, retryCount=0, violations=[]
+    result  : PASS
+
+=== done ===

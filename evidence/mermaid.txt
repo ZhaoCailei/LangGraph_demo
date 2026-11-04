@@ -1,0 +1,41 @@
+---
+title: content-publish-pipeline
+---
+flowchart TD
+	__START__((start))
+	__END__((stop))
+	intake("intake")
+	analyze("analyze")
+	score("score")
+	revise("revise")
+	publish("publish")
+	manual_review("manual_review")
+	escalate("escalate")
+	reject("reject")
+	condition1{"check state"}
+	condition2{"check state"}
+	__START__:::__START__ --> intake:::intake
+	intake:::intake -.-> condition1:::condition1
+	condition1:::condition1 -.-> analyze:::analyze
+	%%	intake:::intake -.-> analyze:::analyze
+	condition1:::condition1 -.-> reject:::reject
+	%%	intake:::intake -.-> reject:::reject
+	analyze:::analyze --> score:::score
+	score:::score -.-> condition2:::condition2
+	condition2:::condition2 -.-> escalate:::escalate
+	%%	score:::score -.-> escalate:::escalate
+	condition2:::condition2 -.-> manual_review:::manual_review
+	%%	score:::score -.-> manual_review:::manual_review
+	condition2:::condition2 -.-> revise:::revise
+	%%	score:::score -.-> revise:::revise
+	condition2:::condition2 -.-> publish:::publish
+	%%	score:::score -.-> publish:::publish
+	revise:::revise --> analyze:::analyze
+	publish:::publish --> __END__:::__END__
+	manual_review:::manual_review --> __END__:::__END__
+	escalate:::escalate --> __END__:::__END__
+	reject:::reject --> __END__:::__END__
+
+	classDef __START__ fill:black,stroke-width:1px,font-size:xx-small;
+	classDef __END__ fill:black,stroke-width:1px,font-size:xx-small;
+
